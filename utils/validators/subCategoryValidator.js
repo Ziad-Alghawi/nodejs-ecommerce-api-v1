@@ -1,11 +1,10 @@
 import { check } from "express-validator";
 import validatorMiddleware from "../../middlewares/validatorMiddleware.js";
 
-// export const getsusubCategoryValidator = [
-//   //Rule number 1 to check if the id is a valid MongoDB ObjectId
-//   check("id").isMongoId().withMessage("Invalid susubCategory ID format"),
-//   validatorMiddleware,
-// ];
+export const getsusubCategoryValidator = [
+  check("id").isMongoId().withMessage("Invalid susubCategory ID format"),
+  validatorMiddleware,
+];
 
 export const createsubCategoryValidator = [
   check("name")
@@ -23,12 +22,12 @@ export const createsubCategoryValidator = [
   validatorMiddleware,
 ];
 
-// export const updatesubCategoryValidator = [
-//   check("id").isMongoId().withMessage("Invalid subCategory ID format"),
-//   validatorMiddleware,
-// ];
+export const updatesubCategoryValidator = [
+  check("id").isMongoId().withMessage("Invalid subCategory ID format"),
+  validatorMiddleware,
+];
 
-// export const deletesubCategoryValidator = [
-//   check("id").isMongoId().withMessage("Invalid subCategory ID format"),
-//   validatorMiddleware,
-// ];
+export const deletesubCategoryValidator = [
+  check("id").isMongoId().withMessage("Invalid subCategory ID format"),
+  validatorMiddleware,
+];
