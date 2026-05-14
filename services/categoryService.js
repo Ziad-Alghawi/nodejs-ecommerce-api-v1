@@ -1,7 +1,8 @@
-import Category from "../models/CategoryModel.js";
-import slugify from "slugify";
 import asyncHandler from "express-async-handler";
+import slugify from "slugify";
 import ApiError from "../utils/apiError.js";
+
+import Category from "../models/categoryModel.js";
 
 // @desc Get list of categories
 // @route GET /api/v1/categories
@@ -34,8 +35,12 @@ export const getCategory = asyncHandler(async (req, res, next) => {
 // @route POST /api/v1/categories
 // @access Private
 export const createCategory = asyncHandler(async (req, res) => {
-  const name = req.body.name;
-  const category = await Category.create({ name, slug: slugify(name) });
+  // using destructuring is cleaner than using req.body.name
+  const { name } = req.body;
+  const category = await Category.create({
+    name,
+    slug: slugify(name),
+  });
   res.status(201).json({ data: category });
 });
 
@@ -48,7 +53,10 @@ export const updateCategory = asyncHandler(async (req, res, next) => {
 
   const category = await Category.findOneAndUpdate(
     { _id: id },
-    { name, slug: slugify(name) },
+    {
+      name,
+      slug: slugify(name),
+    },
     { new: true },
   );
 

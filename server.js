@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import morgan from "morgan";
 import dbConnection from "./config/database.js";
 import categoryRoute from "./routes/categoryRoute.js";
+import subCategoryRoute from "./routes/subCategoryRoute.js";
 import ApiError from "./utils/apiError.js";
 import globalError from "./middlewares/errorMiddleware.js";
 
@@ -23,6 +24,7 @@ if (process.env.NODE_ENV === "development") {
 
 // mount Routes
 app.use("/api/v1/categories", categoryRoute);
+app.use("/api/v1/subCategories", subCategoryRoute);
 
 // Handle unhandled routes
 app.all("/*splat", (req, res, next) => {

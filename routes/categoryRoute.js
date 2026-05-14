@@ -4,7 +4,7 @@ import {
   createCategoryValidator,
   updateCategoryValidator,
   deleteCategoryValidator,
-} from "../utils/validators/categoryValidator";
+} from "../utils/validators/categoryValidator.js";
 
 import {
   getCategories,
@@ -12,7 +12,7 @@ import {
   getCategory,
   updateCategory,
   deleteCategory,
-} from "../services/categoryService";
+} from "../services/categoryService.js";
 
 const router = express.Router();
 
