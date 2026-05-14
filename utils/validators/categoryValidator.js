@@ -1,5 +1,5 @@
 import { check } from "express-validator";
-import validatorMiddleware from "../../middlewares/validatorMiddleware.js";
+import validatorMiddleware from "../../middlewares/validatorMiddleware";
 
 export const getCategoryValidator = [
   //Rule number 1 to check if the id is a valid MongoDB ObjectId
