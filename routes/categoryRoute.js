@@ -14,7 +14,11 @@ import {
   deleteCategory,
 } from "../services/categoryService.js";
 
+import subcategoriesRoute from "./subCategoryRoute.js";
+
 const router = express.Router();
+
+router.use("/:categoryId/subcategories", subcategoriesRoute);
 
 // http://localhost:8000/api/v1/categories
 router
