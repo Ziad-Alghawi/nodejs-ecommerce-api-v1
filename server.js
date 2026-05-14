@@ -29,10 +29,19 @@ app.all("/*splat", (req, res, next) => {
   next(new ApiError(`Can't find this route: ${req.originalUrl}`, 400));
 });
 
-// Global error handler middleware
+// Global error handler middleware for express
 app.use(globalError);
 
 const PORT = process.env.PORT || 8000;
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`app running on port ${PORT}`);
+});
+
+// Handle rejections outside express
+process.on("unhandledRejection", (err) => {
+  console.error(`Unhandeled Rejection Errors: ${err.name} | ${err.message}`);
+  server.close(() => {
+    console.error("Shutting down...");
+    process.exit(1);
+  });
 });
