@@ -9,6 +9,7 @@ import dbConnection from "./config/database.js";
 import categoryRoute from "./routes/categoryRoute.js";
 import subCategoryRoute from "./routes/subCategoryRoute.js";
 import brandRoute from "./routes/brandRoute.js";
+import productRoute from "./routes/productRoute.js";
 
 dotenv.config({ path: "config.env" });
 
@@ -29,6 +30,8 @@ if (process.env.NODE_ENV === "development") {
 app.use("/api/v1/categories", categoryRoute);
 app.use("/api/v1/subCategories", subCategoryRoute);
 app.use("/api/v1/brands", brandRoute);
+app.use("/api/v1/products", productRoute);
+app.use("/api/v1/products", productRoute);
 
 // Handle unhandled routes
 app.all("/*splat", (req, res, next) => {
@@ -40,7 +43,7 @@ app.use(globalError);
 
 const PORT = process.env.PORT || 8000;
 const server = app.listen(PORT, () => {
-  console.log(`app running on port ${PORT}`);
+  console.log(`App running on port ${PORT}`);
 });
 
 // Handle rejections outside express

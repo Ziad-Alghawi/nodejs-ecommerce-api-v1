@@ -1,4 +1,4 @@
-import { param, validationResult } from "express-validator";
+import { validationResult } from "express-validator";
 
 // @desc  middleware can catch the error using the rules we set before going to the controller
 //finds the validation errors in this request and wraps them in an object with handy functions
