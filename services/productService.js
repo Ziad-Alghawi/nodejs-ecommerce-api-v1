@@ -44,6 +44,7 @@ export const getProduct = asyncHandler(async (req, res, next) => {
 export const createProduct = asyncHandler(async (req, res) => {
   // using destructuring is cleaner than using req.body.name
   req.body.slug = slugify(req.body.title);
+
   const product = await Product.create(req.body);
   res.status(201).json({ data: product });
 });

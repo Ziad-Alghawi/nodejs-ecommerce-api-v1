@@ -1,5 +1,7 @@
 import { check } from "express-validator";
 import validatorMiddleware from "../../middlewares/validatorMiddleware.js";
+import Category from "../../models/categoryModel.js";
+import SubCategory from "../../models/subCategoryModel.js";
 
 export const createProductValidator = [
   check("title")
@@ -63,12 +65,49 @@ export const createProductValidator = [
     .notEmpty()
     .withMessage("Product must belong to a category")
     .isMongoId()
-    .withMessage("Invalid category ID"),
+    .withMessage("Invalid category ID")
+    .custom((categoryId) =>
+      Category.findById(categoryId).then((category) => {
+        if (!category) {
+          return Promise.reject(
+            new Error(`Category not found for ID ${categoryId}`),
+          );
+        }
+      }),
+    ),
 
-  check("subCategory")
+  check("subCategories")
     .optional()
     .isMongoId()
-    .withMessage("Invalid subcategory ID"),
+    .withMessage("Invalid subcategory ID")
+    .custom((subcategoriesIds) =>
+      SubCategory.find({ _id: { $exists: true, $in: subcategoriesIds } }).then(
+        (result) => {
+          // check the length result equal subcategories in body
+          if (result.length < 1 || result.length !== subcategoriesIds.length) {
+            return Promise.reject(new Error(`Invalid subcategories IDs}`));
+          }
+        },
+      ),
+    )
+    .custom((val, { req }) =>
+      SubCategory.find({ category: req.body.category }).then(
+        (subcategories) => {
+          //console.log(subcategories);
+          const subCategoriesIdsInDB = [];
+          subcategories.forEach((subCategory) => {
+            subCategoriesIdsInDB.push(subCategory._id.toString());
+          });
+          // check if every subcategory in body exist in DB and belong to category in body
+          const checker = (target, arr) => target.every((v) => arr.includes(v));
+          if (!checker(val, subCategoriesIdsInDB)) {
+            return Promise.reject(
+              new Error(`Subcategories not belong to category`),
+            );
+          }
+        },
+      ),
+    ),
 
   check("brand").optional().isMongoId().withMessage("Invalid brand ID"),
 
