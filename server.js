@@ -17,6 +17,7 @@ dotenv.config({ path: "config.env" });
 dbConnection();
 
 const app = express();
+app.set("query parser", "extended");
 
 // Middleware
 app.use(express.json());

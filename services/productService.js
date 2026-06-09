@@ -8,14 +8,29 @@ import Product from "../models/productModel.js";
 // @route GET /api/v1/products
 // @access Public
 export const getProducts = asyncHandler(async (req, res) => {
+  // 1) filtering
+  const queryStringObj = { ...req.query };
+  const excludesFields = ["page", "sort", "limit", "fields"];
+  excludesFields.forEach((field) => delete queryStringObj[field]);
+
+  // Apply filtering for gte, gt, lte, lt
+  let queryStr = JSON.stringify(queryStringObj);
+  queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
+
+  // 2) pagination
   const page = req.query.page * 1 || 1;
-  const limit = req.query.limit * 1 || 5;
+  const limit = req.query.limit * 1 || 50;
   const skip = (page - 1) * limit; //(2-1)*5=5
 
-  const products = await Product.find({})
+  // Build the query
+  const mongooseQuery = Product.find(JSON.parse(queryStr))
     .skip(skip)
     .limit(limit)
     .populate({ path: "category", select: "name -_id" });
+
+  // execute the query
+  const products = await mongooseQuery;
+
   res.status(200).json({
     results: products.length,
     page,

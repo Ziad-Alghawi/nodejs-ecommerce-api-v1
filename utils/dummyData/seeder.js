@@ -1,12 +1,8 @@
 import fs from "fs";
-
-// import colors from "colors";
-
+import "colors";
 import dotenv from "dotenv";
-
-import Product from "../../models/productModel";
-
-import dbConnection from "../../config/database";
+import Product from "../../models/productModel.js";
+import dbConnection from "../../config/database.js";
 
 dotenv.config({ path: "../../config.env" });
 
@@ -39,7 +35,9 @@ const destroyData = async () => {
   }
 };
 
-// node seeder.js -d
+// <<<node seeder.js -d >>> node is 0, seeder.js is 1, -d is 2
+// process.argv contains command-line arguments.
+// The third item is usually the custom argument (e.g. -d or -i)
 if (process.argv[2] === "-i") {
   insertData();
 } else if (process.argv[2] === "-d") {
