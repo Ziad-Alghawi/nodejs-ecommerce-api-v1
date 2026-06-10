@@ -37,6 +37,15 @@ export const getProducts = asyncHandler(async (req, res) => {
     mongooseQuery = mongooseQuery.sort("-createdAt");
   }
 
+  // 4) fields limiting
+  if (req.query.fields) {
+    // title,ratingsAverage,imageCover,price => "title ratingsAverage imageCover price"
+    const fields = req.query.fields.split(",").join(" ");
+    mongooseQuery = mongooseQuery.select(fields);
+  } else {
+    mongooseQuery = mongooseQuery.select("-__v");
+  }
+
   // execute the query
   const products = await mongooseQuery;
 
