@@ -23,10 +23,19 @@ export const getProducts = asyncHandler(async (req, res) => {
   const skip = (page - 1) * limit; //(2-1)*5=5
 
   // Build the query
-  const mongooseQuery = Product.find(JSON.parse(queryStr))
+  let mongooseQuery = Product.find(JSON.parse(queryStr))
     .skip(skip)
     .limit(limit)
     .populate({ path: "category", select: "name -_id" });
+
+  // 3) sorting
+  if (req.query.sort) {
+    // price, -sold => [price, -sold] => "price -sold"
+    const sortBy = req.query.sort.split(",").join(" ");
+    mongooseQuery = mongooseQuery.sort(sortBy);
+  } else {
+    mongooseQuery = mongooseQuery.sort("-createdAt");
+  }
 
   // execute the query
   const products = await mongooseQuery;
