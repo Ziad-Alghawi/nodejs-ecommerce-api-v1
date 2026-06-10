@@ -10,7 +10,7 @@ import Product from "../models/productModel.js";
 export const getProducts = asyncHandler(async (req, res) => {
   // 1) filtering
   const queryStringObj = { ...req.query };
-  const excludesFields = ["page", "sort", "limit", "fields"];
+  const excludesFields = ["page", "sort", "limit", "fields", "keyword"];
   excludesFields.forEach((field) => delete queryStringObj[field]);
 
   // Apply filtering for gte, gt, lte, lt
@@ -44,6 +44,16 @@ export const getProducts = asyncHandler(async (req, res) => {
     mongooseQuery = mongooseQuery.select(fields);
   } else {
     mongooseQuery = mongooseQuery.select("-__v");
+  }
+
+  // 5) search
+  if (req.query.keyword) {
+    const query = {};
+    query.$or = [
+      { title: { $regex: req.query.keyword, $options: "i" } }, //$options: "i"
+      { description: { $regex: req.query.keyword, $options: "i" } },
+    ];
+    mongooseQuery = mongooseQuery.find(query);
   }
 
   // execute the query
