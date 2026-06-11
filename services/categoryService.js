@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler";
 import slugify from "slugify";
 import ApiError from "../utils/apiError.js";
+import ApiFeatures from "../utils/apiFeatures.js";
 
 import Category from "../models/categoryModel.js";
 
@@ -8,13 +9,22 @@ import Category from "../models/categoryModel.js";
 // @route GET /api/v1/categories
 // @access Public
 export const getCategories = asyncHandler(async (req, res) => {
-  const page = req.query.page * 1 || 1;
-  const limit = req.query.limit * 1 || 5;
-  const skip = (page - 1) * limit; //(2-1)*5=5
-  const categories = await Category.find({}).skip(skip).limit(limit);
+  // Build the query
+  const documentsCount = await Category.countDocuments();
+  const apiFeatures = new ApiFeatures(Category.find(), req.query)
+    .paginate(documentsCount)
+    .filter()
+    .search()
+    .limitFields()
+    .sort();
+
+  // execute the query
+  const { mongooseQuery, paginationResult } = apiFeatures;
+  const categories = await mongooseQuery;
+
   res.status(200).json({
     results: categories.length,
-    page,
+    pagination: paginationResult,
     data: categories,
   });
 });

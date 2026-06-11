@@ -1,6 +1,7 @@
 import asyncHandler from "express-async-handler";
 import slugify from "slugify";
 import ApiError from "../utils/apiError.js";
+import ApiFeatures from "../utils/apiFeatures.js";
 
 import SubCategory from "../models/subCategoryModel.js";
 
@@ -34,23 +35,22 @@ export const createFilterObject = (req, res, next) => {
 // @route GET /api/v1/subcategories
 // @access Public
 export const getSubCategories = asyncHandler(async (req, res) => {
-  const page = req.query.page * 1 || 1;
-  const limit = req.query.limit * 1 || 5;
-  const skip = (page - 1) * limit; //(2-1)*5=5
+  // Build the query
+  const documentsCount = await SubCategory.countDocuments();
+  const apiFeatures = new ApiFeatures(SubCategory.find(), req.query)
+    .paginate(documentsCount)
+    .filter()
+    .search()
+    .limitFields()
+    .sort();
 
-  const subCategories = await SubCategory.find(req.filterObject)
-    .skip(skip)
-    .limit(limit);
-  //if not nessary to populate category dont, because it will use 2 queries///////
-  /* .populate({
-     path: "category",
-     select: "name -_id",
-   });
-  */
+  // execute the query
+  const { mongooseQuery, paginationResult } = apiFeatures;
+  const subCategories = await mongooseQuery;
 
   res.status(200).json({
     results: subCategories.length,
-    page,
+    pagination: paginationResult,
     data: subCategories,
   });
 });
