@@ -10,18 +10,22 @@ import Product from "../models/productModel.js";
 // @access Public
 export const getProducts = asyncHandler(async (req, res) => {
   // Build the query
+  const documentsCount = await Product.countDocuments();
   const apiFeatures = new ApiFeatures(Product.find(), req.query)
-    .paginate()
+    .paginate(documentsCount)
     .filter()
     .search()
     .limitFields()
     .sort();
 
   // execute the query
-  const products = await apiFeatures.mongooseQuery;
+  const { mongooseQuery, paginationResult } = apiFeatures;
+
+  const products = await mongooseQuery;
 
   res.status(200).json({
     results: products.length,
+    pagination: paginationResult,
     data: products,
   });
 });
