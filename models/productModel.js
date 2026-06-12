@@ -72,4 +72,12 @@ const productSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+// Mongoose qyery middleware to populate category and subcategories data when finding products
+productSchema.pre(/^find/, function (next) {
+  this.populate({
+    path: "category",
+    select: "name-_id",
+  });
+});
+
 export default mongoose.model("Product", productSchema);
