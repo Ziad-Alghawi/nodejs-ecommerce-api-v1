@@ -12,6 +12,7 @@ import {
   getCategory,
   updateCategory,
   deleteCategory,
+  uploadCategoryImage,
 } from "../services/categoryService.js";
 
 import subcategoriesRoute from "./subCategoryRoute.js";
@@ -24,7 +25,7 @@ router.use("/:categoryId/subcategories", subcategoriesRoute);
 router
   .route("/")
   .get(getCategories)
-  .post(createCategoryValidator, createCategory);
+  .post(uploadCategoryImage, createCategoryValidator, createCategory);
 router
   .route("/:id")
   .get(getCategoryValidator, getCategory)
