@@ -1,3 +1,5 @@
+import path from "path";
+
 import express from "express";
 import dotenv from "dotenv";
 import morgan from "morgan";
@@ -11,7 +13,10 @@ import subCategoryRoute from "./routes/subCategoryRoute.js";
 import brandRoute from "./routes/brandRoute.js";
 import productRoute from "./routes/productRoute.js";
 
+const __dirname = path.resolve();
+
 dotenv.config({ path: "config.env" });
+
 
 // Connect to database
 dbConnection();
@@ -21,6 +26,7 @@ app.set("query parser", "extended");
 
 // Middleware
 app.use(express.json());
+app.use(express.static(path.join(__dirname, "uploads")));
 
 if (process.env.NODE_ENV === "development") {
   app.use(morgan("dev"));
