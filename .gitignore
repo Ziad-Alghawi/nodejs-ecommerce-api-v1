@@ -1,9 +1,15 @@
+# Dependencies
 node_modules/
-config.en
 
-uploads/
-  .gitkeep
-  brands/
-    .gitkeep
-  categories/
-    .gitkeep
+# Environment variables
+config.env
+
+# Uploaded files
+uploads/*
+!uploads/.gitkeep
+
+uploads/brands/*
+!uploads/brands/.gitkeep
+
+uploads/categories/*
+!uploads/categories/.gitkeep

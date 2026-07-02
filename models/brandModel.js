@@ -21,6 +21,23 @@ const brandSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+// set image url
+const setImageUrl = (doc) => {
+  if (doc.image) {
+    doc.image = `${process.env.BASE_URI}/brands/${doc.image}`;
+  }
+}
+
+// this works for findOne, findAll and update but not for create
+brandSchema.post('init', (doc) => {
+  setImageUrl(doc);
+});
+
+// // for create and update
+ brandSchema.post('save', (doc) => {
+  setImageUrl(doc);
+ });
+
 // 2- Create model
 const BrandModel = mongoose.model("Brand", brandSchema);
 
