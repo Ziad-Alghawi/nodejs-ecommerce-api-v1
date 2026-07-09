@@ -12,6 +12,8 @@ import {
   getProduct,
   updateProduct,
   deleteProduct,
+  uploadProductImage,
+  resizeProductImages,
 } from "../services/productService.js";
 
 const router = express.Router();
@@ -21,13 +23,26 @@ const router = express.Router();
 // @access Public
 
 // @desc Create a new product
-router.route("/").get(getProducts).post(createProductValidator, createProduct);
+router
+  .route("/")
+  .get(getProducts)
+  .post(
+    uploadProductImage,
+    resizeProductImages,
+    createProductValidator,
+    createProduct,
+  );
 
 // @desc Get a specific product by id
 router
   .route("/:id")
   .get(getProductValidator, getProduct)
-  .put(updateProductValidator, updateProduct)
+  .put(
+    uploadProductImage,
+    resizeProductImages,
+    updateProductValidator,
+    updateProduct,
+  )
   .delete(deleteProductValidator, deleteProduct);
 
 export default router;

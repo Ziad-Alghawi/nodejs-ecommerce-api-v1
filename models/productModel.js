@@ -80,4 +80,30 @@ productSchema.pre(/^find/, function (next) {
   });
 });
 
+// set image url
+const setImageUrl = (doc) => {
+  if (doc.imageCover) {
+    const imageUrl = `${process.env.BASE_URI}/products/${doc.imageCover}`;
+    doc.imageCover = imageUrl;
+  }
+  if (doc.images) {
+    const imagesList = [];
+    doc.images.forEach((image) => {
+      const imageUrl = `${process.env.BASE_URI}/products/${image}`;
+      imagesList.push(imageUrl);
+    });
+    doc.images = imagesList;
+  }
+};
+
+// this works for findOne, findAll and update but not for create
+productSchema.post("init", (doc) => {
+  setImageUrl(doc);
+});
+
+// // for create and update
+productSchema.post("save", (doc) => {
+  setImageUrl(doc);
+});
+
 export default mongoose.model("Product", productSchema);
