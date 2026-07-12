@@ -1,10 +1,10 @@
 import express from "express";
-// import {
-//   getBrandValidator,
-//   createBrandValidator,
-//   updateBrandValidator,
-//   deleteBrandValidator,
-// } from "../utils/validators/brandValidator.js";
+import {
+  getUserValidator,
+  createUserValidator,
+  updateUserValidator,
+  deleteUserValidator,
+} from "../utils/validators/userValidator.js";
 
 import {
   getUsers,
@@ -14,16 +14,23 @@ import {
   deleteUser,
   uploadUserImage,
   resizeImage,
+  changeUserPassword,
 } from "../services/userService.js";
 
 const router = express.Router();
 
 // http://localhost:8000/api/v1/users
-router.route("/").get(getUsers).post(uploadUserImage, resizeImage, createUser);
+
+router.put("/changePassword/:id", changeUserPassword);
+
+router
+  .route("/")
+  .get(getUsers)
+  .post(uploadUserImage, resizeImage, createUserValidator, createUser);
 router
   .route("/:id")
-  .get(getUser)
-  .put(uploadUserImage, resizeImage, updateUser)
-  .delete(deleteUser);
+  .get(getUserValidator, getUser)
+  .put(uploadUserImage, resizeImage, updateUserValidator, updateUser)
+  .delete(deleteUserValidator, deleteUser);
 
 export default router;

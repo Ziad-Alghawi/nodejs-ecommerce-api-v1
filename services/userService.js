@@ -1,8 +1,10 @@
 import sharp from "sharp";
 import asyncHandler from "express-async-handler";
 import { v4 as uuidv4 } from "uuid";
+import bcrypt from "bcryptjs";
 
 import * as factory from "./handlersFactory.js";
+import ApiError from "../utils/apiError.js";
 import { uploadSingleImage } from "../middlewares/uploadImageMiddleware.js";
 
 import User from "../models/userModel.js";
@@ -47,7 +49,44 @@ export const createUser = factory.createOne(User);
 //@desc  update a specific user by id
 // @route PUT /api/v1/users/:id
 // @access Private
-export const updateUser = factory.updateOne(User);
+export const updateUser = asyncHandler(async (req, res, next) => {
+  const document = await User.findByIdAndUpdate(
+    req.params.id,
+    {
+      name: req.body.name,
+      slug: req.body.slug,
+      email: req.body.email,
+      phone: req.body.phone,
+      profileImage: req.body.profileImage,
+      role: req.body.role,
+    },
+    {
+      new: true,
+    },
+  );
+
+  if (!document) {
+    return next(new ApiError(`No document for this id ${req.params.id} `, 404));
+  }
+  res.status(200).json({ data: document });
+});
+
+export const changeUserPassword = asyncHandler(async (req, res, next) => {
+  const document = await User.findByIdAndUpdate(
+    req.params.id,
+    {
+      password: await bcrypt.hash(req.body.password, 12),
+    },
+    {
+      new: true,
+    },
+  );
+
+  if (!document) {
+    return next(new ApiError(`No document for this id ${req.params.id} `, 404));
+  }
+  res.status(200).json({ data: document });
+});
 
 //@desc  Delete a specific user by id
 // @route DELETE /api/v1/users/:id
