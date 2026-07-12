@@ -4,6 +4,7 @@ import {
   createUserValidator,
   updateUserValidator,
   deleteUserValidator,
+  changeUserPasswordValidator,
 } from "../utils/validators/userValidator.js";
 
 import {
@@ -21,7 +22,11 @@ const router = express.Router();
 
 // http://localhost:8000/api/v1/users
 
-router.put("/changePassword/:id", changeUserPassword);
+router.put(
+  "/changePassword/:id",
+  changeUserPasswordValidator,
+  changeUserPassword,
+);
 
 router
   .route("/")
