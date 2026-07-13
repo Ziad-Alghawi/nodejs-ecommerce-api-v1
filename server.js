@@ -13,6 +13,7 @@ import subCategoryRoute from "./routes/subCategoryRoute.js";
 import brandRoute from "./routes/brandRoute.js";
 import productRoute from "./routes/productRoute.js";
 import userRoute from "./routes/userRoute.js";
+import authRoute from "./routes/authRoute.js";
 
 const __dirname = path.resolve();
 
@@ -39,6 +40,7 @@ app.use("/api/v1/subCategories", subCategoryRoute);
 app.use("/api/v1/brands", brandRoute);
 app.use("/api/v1/products", productRoute);
 app.use("/api/v1/users", userRoute);
+app.use("/api/v1/auth", authRoute);
 
 // Handle unhandled routes
 app.all("/*splat", (req, res, next) => {
