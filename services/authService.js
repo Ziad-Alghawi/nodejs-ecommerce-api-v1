@@ -12,7 +12,7 @@ const createToken = (payload) =>
   });
 
 // @desc Signup a new user
-// @route POST /api/v1/signup
+// @route POST /api/v1/auth/signup
 // @access Public
 export const signup = asyncHandler(async (req, res) => {
   // 1- Create user
@@ -28,6 +28,9 @@ export const signup = asyncHandler(async (req, res) => {
   res.status(201).json({ data: user, token });
 });
 
+// @desc Login a user
+// @route POST /api/v1/auth/login
+// @access Public
 export const login = asyncHandler(async (req, res, next) => {
   // 1- check if email and password in the request body
   // 2- check if user exists & password is correct
@@ -40,4 +43,53 @@ export const login = asyncHandler(async (req, res, next) => {
 
   // 4- send response to client side
   res.status(200).json({ data: user, token });
+});
+
+export const protect = asyncHandler(async (req, res, next) => {
+  // 1- check if token exists >> if exists, get it
+  let token;
+  if (
+    req.headers.authorization &&
+    req.headers.authorization.startsWith("Bearer")
+  ) {
+    token = req.headers.authorization.split(" ")[1];
+    console.log(token);
+  }
+  if (!token) {
+    return next(
+      new ApiError(
+        "You are not logged in, please login to get access for this route",
+        401,
+      ),
+    );
+  }
+
+  // 2- verify token (no changes happened on it -- and not expired)
+  const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+
+  // 3- check if user exists
+  const currentUser = await User.findById(decoded.userId);
+  if (!currentUser) {
+    return next(
+      new ApiError(
+        "The user belonging to this token does no longer exist",
+        401,
+      ),
+    );
+  }
+  // 4- check if user changed password after token was issued
+  if (currentUser.passwordChangedAt) {
+    const passwordChangedTimestamp = parseInt(
+      currentUser.passwordChangedAt.getTime() / 1000,
+      10,
+    );
+    //Password changed after token was issued
+    if (passwordChangedTimestamp > decoded.iat) {
+      return next(
+        new ApiError("User recently changed password! Please login again", 401),
+      );
+    }
+  }
+  req.user = currentUser; // add user data to request object
+  next();
 });
