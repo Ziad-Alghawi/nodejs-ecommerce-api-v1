@@ -16,7 +16,7 @@ import {
   resizeImage,
 } from "../services/categoryService.js";
 
-import { protect } from "../services/authService.js";
+import { protect, allowedTo } from "../services/authService.js";
 
 import subcategoriesRoute from "./subCategoryRoute.js";
 
@@ -30,6 +30,7 @@ router
   .get(getCategories)
   .post(
     protect,
+    allowedTo("admin", "manager"),
     uploadCategoryImage,
     resizeImage,
     createCategoryValidator,
@@ -39,11 +40,13 @@ router
   .route("/:id")
   .get(getCategoryValidator, getCategory)
   .put(
+    protect,
+    allowedTo("admin", "manager"),
     uploadCategoryImage,
     resizeImage,
     updateCategoryValidator,
     updateCategory,
   )
-  .delete(deleteCategoryValidator, deleteCategory);
+  .delete(protect, allowedTo("admin"), deleteCategoryValidator, deleteCategory);
 
 export default router;

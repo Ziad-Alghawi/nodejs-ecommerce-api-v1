@@ -1,5 +1,5 @@
 import express from "express";
-
+import { protect, allowedTo } from "../services/authService.js";
 import {
   createSubCategory,
   getSubCategories,
@@ -23,14 +23,30 @@ const router = express.Router({ mergeParams: true });
 // here is the route for subcategories
 router
   .route("/")
-  .post(setCategoryIdToBody, createsubCategoryValidator, createSubCategory)
+  .post(
+    protect,
+    allowedTo("admin", "manager"),
+    setCategoryIdToBody,
+    createsubCategoryValidator,
+    createSubCategory,
+  )
   .get(createFilterObject, getSubCategories);
 
 // Validate data before reaching the controller/business logic
 router
   .route("/:id")
   .get(getsusubCategoryValidator, getSubCategory)
-  .put(updatesubCategoryValidator, updateSubCategory)
-  .delete(deletesubCategoryValidator, deleteSubCategory);
+  .put(
+    protect,
+    allowedTo("admin", "manager"),
+    updatesubCategoryValidator,
+    updateSubCategory,
+  )
+  .delete(
+    protect,
+    allowedTo("admin"),
+    deletesubCategoryValidator,
+    deleteSubCategory,
+  );
 
 export default router;

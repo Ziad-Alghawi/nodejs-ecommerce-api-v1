@@ -1,4 +1,5 @@
 import express from "express";
+import { protect, allowedTo } from "../services/authService.js";
 import {
   getProductValidator,
   createProductValidator,
@@ -27,6 +28,8 @@ router
   .route("/")
   .get(getProducts)
   .post(
+    protect,
+    allowedTo("admin", "manager"),
     uploadProductImage,
     resizeProductImages,
     createProductValidator,
@@ -38,11 +41,13 @@ router
   .route("/:id")
   .get(getProductValidator, getProduct)
   .put(
+    protect,
+    allowedTo("admin", "manager"),
     uploadProductImage,
     resizeProductImages,
     updateProductValidator,
     updateProduct,
   )
-  .delete(deleteProductValidator, deleteProduct);
+  .delete(protect, allowedTo("admin"), deleteProductValidator, deleteProduct);
 
 export default router;

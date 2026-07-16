@@ -45,6 +45,7 @@ export const login = asyncHandler(async (req, res, next) => {
   res.status(200).json({ data: user, token });
 });
 
+// @desc Make sure the user is logged in and protect the route
 export const protect = asyncHandler(async (req, res, next) => {
   // 1- check if token exists >> if exists, get it
   let token;
@@ -93,3 +94,16 @@ export const protect = asyncHandler(async (req, res, next) => {
   req.user = currentUser; // add user data to request object
   next();
 });
+
+// ["admin", "manager"]
+export const allowedTo = (...roles) =>
+  asyncHandler(async (req, res, next) => {
+    // 1- access roles
+    //2- access registered user(req.user.role)
+    if (!roles.includes(req.user.role)) {
+      return next(
+        new ApiError("You are not allowed to access this route", 403),
+      );
+    }
+    next();
+  });
