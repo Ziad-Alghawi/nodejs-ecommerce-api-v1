@@ -31,6 +31,9 @@ const userSchema = new mongoose.Schema(
     },
 
     passwordChangedAt: Date,
+    passwordResetCode: String,
+    passwordResetExpires: Date,
+    passwordResetVerified: Boolean,
 
     role: {
       type: String,
@@ -45,10 +48,11 @@ const userSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
-userSchema.pre("save", async function (next) {
-  // Only run this function if password was actually modified
-  if (!this.isModified("password")) return next();
-  // Hashing user password before saving
+userSchema.pre("save", async function () {
+  // Only hash the password if it was modified
+  if (!this.isModified("password")) return;
+
+  // Hash the password before saving it to the database
   this.password = await bcrypt.hash(this.password, 12);
 });
 

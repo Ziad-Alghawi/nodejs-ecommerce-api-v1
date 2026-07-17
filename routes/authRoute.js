@@ -4,20 +4,20 @@ import {
   loginValidator,
 } from "../utils/validators/authValidator.js";
 
-import { signup, login } from "../services/authService.js";
+import {
+  signup,
+  login,
+  forgotPassword,
+  verifyPassResetCode,
+  resetPassword,
+} from "../services/authService.js";
 
 const router = express.Router();
 
-// http://localhost:8000/api/v1/auth/signup
-router.route("/signup").post(signupValidator, signup);
-
-// http://localhost:8000/api/v1/auth/login
-router.route("/login").post(loginValidator, login);
-
-// router
-//   .route("/:id")
-//   .get(getUserValidator, getUser)
-//   .put(uploadUserImage, resizeImage, updateUserValidator, updateUser)
-//   .delete(deleteUserValidator, deleteUser);
+router.post("/signup", signupValidator, signup);
+router.post("/login", loginValidator, login);
+router.post("/forgotpassword", forgotPassword);
+router.post("/verifyResetCode", verifyPassResetCode);
+router.put("/resetpassword", resetPassword);
 
 export default router;
