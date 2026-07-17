@@ -6,6 +6,8 @@ import {
   updateUserValidator,
   deleteUserValidator,
   changeUserPasswordValidator,
+  updateLoggedUserValidator,
+  changeLoggedUserPasswordValidator,
 } from "../utils/validators/userValidator.js";
 
 import {
@@ -17,12 +19,28 @@ import {
   uploadUserImage,
   resizeImage,
   changeUserPassword,
+  getLoggedUserData,
+  updateLoggedUserPassword,
+  updateLoggedUserData,
+  deleteLoggedUser,
 } from "../services/userService.js";
 
 const router = express.Router();
 
-// http://localhost:8000/api/v1/users
+router.use(protect); // protect all routes after this middleware
 
+// Logged in user
+router.get("/getMe", getLoggedUserData, getUser);
+router.put(
+  "/changeMyPassword",
+  changeLoggedUserPasswordValidator,
+  updateLoggedUserPassword,
+);
+router.put("/updateMe", updateLoggedUserValidator, updateLoggedUserData);
+router.delete("/deleteMe", deleteLoggedUser);
+
+// Admin
+router.use(allowedTo("admin", "manager"));
 router.put(
   "/changePassword/:id",
   changeUserPasswordValidator,
@@ -31,9 +49,8 @@ router.put(
 
 router
   .route("/")
-  .get(protect, allowedTo("admin", "manager"), getUsers)
+  .get(getUsers)
   .post(
-    protect,
     allowedTo("admin"),
     uploadUserImage,
     resizeImage,
@@ -42,15 +59,14 @@ router
   );
 router
   .route("/:id")
-  .get(protect, allowedTo("admin"), getUserValidator, getUser)
+  .get(getUserValidator, getUser)
   .put(
-    protect,
     allowedTo("admin"),
     uploadUserImage,
     resizeImage,
     updateUserValidator,
     updateUser,
   )
-  .delete(protect, allowedTo("admin"), deleteUserValidator, deleteUser);
+  .delete(allowedTo("admin"), deleteUserValidator, deleteUser);
 
 export default router;

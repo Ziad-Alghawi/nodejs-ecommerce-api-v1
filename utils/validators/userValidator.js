@@ -97,7 +97,7 @@ export const updateUserValidator = [
   validatorMiddleware,
 ];
 
-// Change user password validator
+// Change user password validator (for admin only)
 export const changeUserPasswordValidator = [
   check("id").isMongoId().withMessage("Invalid User ID format"),
 
@@ -106,10 +106,11 @@ export const changeUserPasswordValidator = [
     .withMessage("You must enter your current password"),
   body("passwordConfirm")
     .notEmpty()
-    .withMessage("You must enter your the password confirm"),
+    .withMessage("You must enter your password confirmation"),
   body("password")
     .notEmpty()
     .withMessage("You must enter your new password")
+
     .custom(async (val, { req }) => {
       // 1- Verify the current password
       const user = await User.findById(req.params.id);
@@ -133,7 +134,73 @@ export const changeUserPasswordValidator = [
   validatorMiddleware,
 ];
 
+// Delete user validator (for admin only)
 export const deleteUserValidator = [
   check("id").isMongoId().withMessage("Invalid User ID format"),
+  validatorMiddleware,
+];
+
+// Change logged user password validator (for logged in user only)
+export const changeLoggedUserPasswordValidator = [
+  body("currentPassword")
+    .notEmpty()
+    .withMessage("You must enter your current password"),
+  body("passwordConfirm")
+    .notEmpty()
+    .withMessage("You must enter your password confirmation"),
+  body("password")
+    .notEmpty()
+    .withMessage("You must enter your new password")
+
+    .custom(async (val, { req }) => {
+      // 1- Verify the current password
+      const user = await User.findById(req.user._id);
+      if (!user) {
+        throw new Error("There is no user for this id");
+      }
+      const isCorrectPassword = await bcrypt.compare(
+        req.body.currentPassword,
+        user.password,
+      );
+      if (!isCorrectPassword) {
+        throw new Error("Incorrect current password");
+      }
+
+      // 2- Verify the password confirmation
+      if (val !== req.body.passwordConfirm) {
+        throw new Error("Password confirmation does not match password");
+      }
+      return true;
+    }),
+  validatorMiddleware,
+];
+
+// Update logged user validator (for logged in user only)
+export const updateLoggedUserValidator = [
+  body("name")
+    .optional()
+    .custom((val, { req }) => {
+      req.body.slug = slugify(val);
+      return true;
+    }),
+
+  check("email")
+    .notEmpty()
+    .withMessage("User email required")
+    .isEmail()
+    .withMessage("Invalid email format")
+    .custom((val) =>
+      User.findOne({ email: val }).then((user) => {
+        if (user) {
+          return Promise.reject(new Error("E-mail already in use"));
+        }
+      }),
+    ),
+
+  check("phone")
+    .optional()
+    .isMobilePhone("de-DE")
+    .withMessage("Invalid phone number only accepted German numbers "),
+
   validatorMiddleware,
 ];

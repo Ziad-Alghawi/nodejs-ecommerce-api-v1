@@ -5,13 +5,9 @@ import bcrypt from "bcryptjs";
 import asyncHandler from "express-async-handler";
 import ApiError from "../utils/apiError.js";
 import sendEmail from "../utils/sendEmail.js";
+import createToken from "../utils/createToken.js";
 
 import User from "../models/userModel.js";
-
-const createToken = (payload) =>
-  jwt.sign({ userId: payload }, process.env.JWT_SECRET_KEY, {
-    expiresIn: process.env.JWT_EXPIRES_TIME,
-  });
 
 // @desc Signup a new user
 // @route POST /api/v1/auth/signup
