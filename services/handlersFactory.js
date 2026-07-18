@@ -33,10 +33,17 @@ export const createOne = (Model) =>
     res.status(201).json({ data: newDoc });
   });
 
-export const getOne = (Model) =>
+export const getOne = (Model, populationOpt) =>
   asyncHandler(async (req, res, next) => {
     const { id } = req.params;
-    const document = await Model.findById(id);
+    // 1- Build query
+    const query = Model.findById(id);
+    if (populationOpt) {
+      query.populate(populationOpt);
+    }
+
+    // 2- Execute query
+    const document = await query;
     if (!document) {
       return next(new ApiError(`No document for this id ${id} `, 404));
     }

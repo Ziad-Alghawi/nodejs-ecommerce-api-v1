@@ -13,7 +13,7 @@ const reviewSchema = new mongoose.Schema(
     },
     user: {
       type: mongoose.Schema.ObjectId,
-      ref: "User",
+      ref: "user",
       required: [true, "Review must belong to a user"],
     },
     product: {
@@ -24,5 +24,9 @@ const reviewSchema = new mongoose.Schema(
   },
   { timestamps: true },
 );
+
+reviewSchema.pre(/^find/, function (next) {
+  this.populate({ path: "user", select: "name" });
+}); // After populate(), review.user becomes a document, so use review.user._id when comparing IDs.
 
 export default mongoose.model("Review", reviewSchema);

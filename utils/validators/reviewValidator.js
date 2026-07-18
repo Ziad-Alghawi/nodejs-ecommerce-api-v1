@@ -48,7 +48,7 @@ export const updateReviewValidator = [
           );
         }
 
-        if (review.user.toString() !== req.user._id.toString()) {
+        if (review.user._id.toString() !== req.user._id.toString()) {
           return Promise.reject(
             new Error(`You are not allowed to update this review`),
           );
@@ -72,7 +72,7 @@ export const deleteReviewValidator = [
               new Error(`There is no review for this id: ${val}`),
             );
           }
-          if (review.user.toString() !== req.user._id.toString()) {
+          if (review.user._id.toString() !== req.user._id.toString()) {
             return Promise.reject(
               new Error(`You are not allowed to delete this review`),
             );

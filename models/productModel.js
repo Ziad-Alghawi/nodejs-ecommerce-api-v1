@@ -69,8 +69,20 @@ const productSchema = new mongoose.Schema(
     },
   },
 
-  { timestamps: true },
+  {
+    timestamps: true,
+
+    // to enable virtual populate we need these
+    toJSON: { virtuals: true },
+    toObject: { virtuals: true },
+  },
 );
+
+productSchema.virtual("reviews", {
+  ref: "Review",
+  foreignField: "product",
+  localField: "_id",
+});
 
 // Mongoose qyery middleware to populate category and subcategories data when finding products
 productSchema.pre(/^find/, function (next) {

@@ -64,7 +64,7 @@ export const getProducts = factory.getAll(Product, "Product");
 //@desc get a specific product by id
 // @route GET /api/v1/products/:id
 // @access Public
-export const getProduct = factory.getOne(Product);
+export const getProduct = factory.getOne(Product, "reviews");
 
 // @desc Create a new product
 // @route POST /api/v1/products
